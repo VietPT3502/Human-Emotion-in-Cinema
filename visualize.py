@@ -57,7 +57,7 @@ def load_img(path):
 
 if args.cam:
     # Load the cascade
-    face_cascade = cv2.CascadeClassifier('cascade_model/haarcascade_frontalface_default.xml')
+    face_cascade = cv2.CascadeClassifier(cv2.samples.findFile(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'))
 
     # To capture video from webcam.
     cap = cv2.VideoCapture(0)
@@ -73,24 +73,24 @@ if args.cam:
             roi = img[y:y+h, x:x+w]
             roi = cv2.cvtColor(roi,cv2.COLOR_BGR2GRAY)
             roi = cv2.resize(roi,(48,48))
-            cv2.imwrite("roi.jpg", roi)
+            cv2.imwrite(f"Webcam/roi.jpg", roi)
             cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+            imgg = load_img(f"Webcam/roi.jpg")
+            out = net(imgg)
+            pred = F.softmax(out)
+            classs = torch.argmax(pred, 1)
+            wrong = torch.where(classs != 3, torch.tensor([1.]).cuda(), torch.tensor([0.]).cuda())
+            classs = torch.argmax(pred, 1)
+            prediction = classes[classs.item()]
 
-        imgg = load_img("roi.jpg")
-        out = net(imgg)
-        pred = F.softmax(out)
-        classs = torch.argmax(pred,1)
-        wrong = torch.where(classs != 3,torch.tensor([1.]).cuda(),torch.tensor([0.]).cuda())
-        classs = torch.argmax(pred,1)
-        prediction = classes[classs.item()]
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            org = (50, 50)
+            fontScale = 1
+            color = (255, 0, 0)
+            thickness = 2
+            img = cv2.putText(img, prediction, (x + org[0], y + org[1]), font,
+                              fontScale, color, thickness, cv2.LINE_AA)
 
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        org = (50, 50)
-        fontScale = 1
-        color = (255, 0, 0)
-        thickness = 2
-        img = cv2.putText(img, prediction, org, font,
-                       fontScale, color, thickness, cv2.LINE_AA)
 
         cv2.imshow('img', img)
         # Stop if (Q) key is pressed
