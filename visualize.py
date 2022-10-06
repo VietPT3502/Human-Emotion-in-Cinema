@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader, Dataset
 import torch.nn.functional as F
 from deep_emotion import Deep_Emotion
 from data_loaders import Plain_Dataset, eval_data_dataloader
+from retinaface import RetinaFace
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -56,9 +57,12 @@ def load_img(path):
     return img.to(device)
 
 if args.cam:
-    # Load the cascade
-    face_cascade = cv2.CascadeClassifier(cv2.samples.findFile(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'))
 
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    org = (50, 50)
+    fontScale = 1
+    color = (255, 0, 0)
+    thickness = 2
     # To capture video from webcam.
     cap = cv2.VideoCapture(0)
     while True:
@@ -66,32 +70,31 @@ if args.cam:
         _, img = cap.read()
         # Convert to grayscale
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        cv2.imwrite("Webcam/gray.jpg", gray)
         # Detect the faces
-        faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+        faces = RetinaFace.detect_faces(img_path="Webcam/gray.jpg")
+
         # Draw the rectangle around each face
-        for (x, y, w, h) in faces:
-            roi = img[y:y+h, x:x+w]
-            roi = cv2.cvtColor(roi,cv2.COLOR_BGR2GRAY)
-            roi = cv2.resize(roi,(48,48))
-            cv2.imwrite(f"Webcam/roi.jpg", roi)
-            cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
-            imgg = load_img(f"Webcam/roi.jpg")
-            out = net(imgg)
-            pred = F.softmax(out)
-            classs = torch.argmax(pred, 1)
-            wrong = torch.where(classs != 3, torch.tensor([1.]).cuda(), torch.tensor([0.]).cuda())
-            classs = torch.argmax(pred, 1)
-            prediction = classes[classs.item()]
+        if type(faces) is dict:
+            for value in faces.values():
+                (x1, y1, x2, y2) = value["facial_area"]
+                roi = img[y1:y2, x1:x2]
+                roi = cv2.cvtColor(roi,cv2.COLOR_BGR2GRAY)
+                roi = cv2.resize(roi,(48,48))
+                cv2.imwrite("Webcam/roi.jpg", roi)
+                cv2.rectangle(img, (x2, y2), (x1, y1), (255, 0, 0), 2)
+                imgg = load_img("Webcam/roi.jpg")
+                out = net(imgg)
+                pred = F.softmax(out)
+                classs = torch.argmax(pred, 1)
+                wrong = torch.where(classs != 3, torch.tensor([1.]).cuda(), torch.tensor([0.]).cuda())
+                classs = torch.argmax(pred, 1)
+                prediction = classes[classs.item()]
 
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            org = (50, 50)
-            fontScale = 1
-            color = (255, 0, 0)
-            thickness = 2
-            img = cv2.putText(img, prediction, (x + org[0], y + org[1]), font,
-                              fontScale, color, thickness, cv2.LINE_AA)
-
-
+                img = cv2.putText(img, prediction, (x1 + org[0], y1 + org[1]), font,
+                                  fontScale, color, thickness, cv2.LINE_AA)
+        else:
+            img = cv2.putText(img, "Nobody face is detected", org, font,fontScale, color, thickness, cv2.LINE_AA)
         cv2.imshow('img', img)
         # Stop if (Q) key is pressed
         k = cv2.waitKey(30)
