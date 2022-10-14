@@ -23,6 +23,14 @@ def Train(epochs,train_loader,val_loader,criterion,optmizer,device):
     '''
     print("===================================Start Training===================================")
     for e in range(epochs):
+        if e == 81:
+            lr = lr * 0.1
+        if e == 121:
+            lr = lr * 0.01
+        if e == 161:
+            lr = lr * 0.001
+        if e == 181:
+            lr = lr * 0.0005
         train_loss = 0
         validation_loss = 0
         train_correct = 0
@@ -86,9 +94,9 @@ if __name__ == '__main__':
         lr = args.learning_rate
         batchsize = args.batch_size
     else :
-        epochs = 100
-        lr = 0.005
-        batchsize = 128
+        epochs = 200
+        lr = 0.001
+        batchsize = 64
 
     if args.train:
         net = Deep_Emotion()
