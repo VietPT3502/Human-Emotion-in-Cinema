@@ -17,20 +17,13 @@ from generate_data import Generate_data
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-def Train(epochs,train_loader,val_loader,criterion,optmizer,device):
+def Train(epochs,train_loader,val_loader,criterion,optimizer, scheduler,device):
     '''
     Training Loop
     '''
     print("===================================Start Training===================================")
     for e in range(epochs):
-        if e == 81:
-            lr = lr * 0.1
-        if e == 121:
-            lr = lr * 0.01
-        if e == 161:
-            lr = lr * 0.001
-        if e == 181:
-            lr = lr * 0.0005
+        print(optimizer.param_groups[0]["lr"])
         train_loss = 0
         validation_loss = 0
         train_correct = 0
@@ -39,15 +32,15 @@ def Train(epochs,train_loader,val_loader,criterion,optmizer,device):
         net.train()
         for data, labels in train_loader:
             data, labels = data.to(device), labels.to(device)
-            optmizer.zero_grad()
+            optimizer.zero_grad()
             outputs = net(data)
             loss = criterion(outputs,labels)
             loss.backward()
-            optmizer.step()
+            optimizer.step()
             train_loss += loss.item()
             _, preds = torch.max(outputs,1)
             train_correct += torch.sum(preds == labels.data)
-
+        scheduler.step()
         #validate the model#
         net.eval()
         for data,labels in val_loader:
@@ -95,8 +88,8 @@ if __name__ == '__main__':
         batchsize = args.batch_size
     else :
         epochs = 200
-        lr = 0.001
-        batchsize = 64
+        lr = 0.05
+        batchsize = 216
 
     if args.train:
         net = Deep_Emotion()
@@ -114,5 +107,6 @@ if __name__ == '__main__':
         val_loader=   DataLoader(validation_dataset,batch_size=batchsize,shuffle = True,num_workers=0)
 
         criterion= nn.CrossEntropyLoss()
-        optmizer= optim.Adam(net.parameters(),lr= lr)
-        Train(epochs, train_loader, val_loader, criterion, optmizer, device)
+        optimizer= optim.SGD(net.parameters(),lr= lr)
+        scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[81,121, 161,181], gamma=0.5)
+        Train(epochs, train_loader, val_loader, criterion, optimizer, scheduler, device)
