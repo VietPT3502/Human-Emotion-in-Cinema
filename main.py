@@ -16,7 +16,6 @@ from deep_emotion import Deep_Emotion
 from generate_data import Generate_data
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
 def Train(epochs,train_loader,val_loader,criterion,optimizer, scheduler,device):
     '''
     Training Loop
@@ -87,9 +86,9 @@ if __name__ == '__main__':
         lr = args.learning_rate
         batchsize = args.batch_size
     else :
-        epochs = 200
+        epochs = 300
         lr = 0.05
-        batchsize = 216
+        batchsize = 64
 
     if args.train:
         net = Deep_Emotion()
@@ -100,13 +99,19 @@ if __name__ == '__main__':
         train_img_dir = args.data+'/'+'train/'
         validation_img_dir = args.data+'/'+'val/'
 
-        transformation= transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5,),(0.5,))])
-        train_dataset= Plain_Dataset(csv_file=traincsv_file, img_dir = train_img_dir, datatype = 'train', transform = transformation)
-        validation_dataset= Plain_Dataset(csv_file=validationcsv_file, img_dir = validation_img_dir, datatype = 'val', transform = transformation)
+        transformation_train = transforms.Compose([transforms.RandomRotation(degrees=45),
+                                             transforms.RandomHorizontalFlip(p=0.5),
+                                             transforms.RandomVerticalFlip(p=0.05),
+                                             transforms.ToTensor(),
+                                             transforms.Normalize((0.5,), (0.5,))])
+        transformation_valid = transforms.Compose([transforms.ToTensor(),
+                                             transforms.Normalize((0.5,), (0.5,))])
+        train_dataset= Plain_Dataset(csv_file=traincsv_file, img_dir = train_img_dir, datatype = 'train', transform = transformation_train)
+        validation_dataset= Plain_Dataset(csv_file=validationcsv_file, img_dir = validation_img_dir, datatype = 'val', transform = transformation_valid)
         train_loader= DataLoader(train_dataset,batch_size=batchsize,shuffle = True,num_workers=0)
         val_loader=   DataLoader(validation_dataset,batch_size=batchsize,shuffle = True,num_workers=0)
 
         criterion= nn.CrossEntropyLoss()
-        optimizer= optim.SGD(net.parameters(),lr= lr)
-        scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[81,121, 161,181], gamma=0.5)
+        optimizer= optim.SGD(net.parameters(),lr= lr, weight_decay=0.001)
+        scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[81,121, 161,181, 241, 281], gamma=0.5)
         Train(epochs, train_loader, val_loader, criterion, optimizer, scheduler, device)

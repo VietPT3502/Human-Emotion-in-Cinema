@@ -25,9 +25,11 @@ class Generate_data():
         """
         train_csv_path = self.data_path +"/"+ 'train.csv'
         train = pd.read_csv(train_csv_path)
-        validation_data = pd.DataFrame(train.iloc[:3589,:])
-        train_data = pd.DataFrame(train.iloc[3589:,:])
-        train_data.to_csv(self.data_path+"/train.csv")
+        test_csv_path = self.data_path +"/"+ 'test.csv'
+        test = pd.read_csv(test_csv_path)
+        validation_data = pd.DataFrame(test.iloc[:3589,:])
+        test_data = pd.DataFrame(test.iloc[3589:,:])
+        test_data.to_csv(self.data_path+"/test.csv")
         validation_data.to_csv(self.data_path+"/"+val_filename+".csv")
         print("Done splitting the test file into validation & final test file")
 
