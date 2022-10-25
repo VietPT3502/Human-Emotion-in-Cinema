@@ -14,7 +14,7 @@ public before. Which is Recognition Induces Emotional of Audiences In Cinema.
 
 
 <p align="center">
-  <img src="imgs/net_arch.PNG" width="960" title="Deep-Emotion Architecture">
+  <img src="imgs/net_arch.png" width="960" title="Deep-Emotion Architecture">
 </p>
 
 
