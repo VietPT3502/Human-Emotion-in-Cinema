@@ -22,10 +22,10 @@ public before. Which is Recognition Induces Emotional of Audiences In Cinema.
 * [FER2013](https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data)
   + Includes 28709 examples in the train set, 7178 examples in the test set.
   + Data is collected in the form of a CSV file with 3 fields of information:
-  1. Emotion: Labeled from 0 to 6 represents Human Emotions 0=Angry,
-  1=Disgust, 2=Fear, 3=Happy, 4=Sad, 5=Surprise, 6=Neutral.
-  2. Usage: Data used to train or test.
-  3. Pixels: Consists of a sequence of pixels that make up an image.
+    1. Emotion: Labeled from 0 to 6 represents Human Emotions 0=Angry,
+    `1=Disgust, 2=Fear, 3=Happy, 4=Sad, 5=Surprise, 6=Neutral.
+    2. Usage: Data used to train or test.
+    3. Pixels: Consists of a sequence of pixels that make up an image.
   + Each image will have a resolution of 48x48.
   + Black-White image.
 * [CK+](https://www.kaggle.com/datasets/shawon10/ckplus)
