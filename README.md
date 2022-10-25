@@ -81,7 +81,7 @@ python main.py  [-t] [--data [data_path]] [--hparams [hyperparams]]
 --learning_rate         Learning rate value
 --batch_size            Training/validation batch size
 ```
-
+ 
 **To validate the model**
 ```
 python visualize.py [-t] [-c] [--data [data_path]] [--model [model_path]]
