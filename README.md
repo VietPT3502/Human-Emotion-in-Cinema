@@ -20,13 +20,6 @@ This is a PyTorch implementation of research paper, [Deep-Emotion](https://arxiv
 * [JAFFE](https://www.researchgate.net/publication/220013358_The_japanese_female_facial_expression_jaffe_database)
 * [FERG](https://homes.cs.washington.edu/~deepalia/papers/deepExpr_accv2016.pdf)
 
-## Prerequisites
-To run this code, you need to have the following libraries:
-* pytorch >= 1.1.0
-* torchvision ==0.5.0
-* opencv
-* tqdm
-* PIL
 
 ## Structure of this repository
 This repository is organized as :
