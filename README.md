@@ -7,7 +7,6 @@ public before. Which is Recognition Induces Emotional of Audiences In Cinema.
 ## Requirement
 * pip install -r requirements.txt
 
-
 ## Architecture
 * An end-to-end deep learning framework, based on attentional convolutional network
 * Attention mechanism is added through spatial transformer network
