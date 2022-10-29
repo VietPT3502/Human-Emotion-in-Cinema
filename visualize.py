@@ -57,7 +57,7 @@ if args.test_acc:
             acc = 1 - (torch.sum(wrong) / 64)
             total.append(acc.item())
 
-    print('Accuracy of the network on the test images: %d %%' % (100 * np.mean(total)))
+    print('Accuracy of the network on the test images: %.2f %%' % (100 * np.mean(total)))
 
 
 # helper_function for real time testing
