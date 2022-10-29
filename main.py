@@ -110,8 +110,9 @@ if __name__ == '__main__':
         validation_dataset= Plain_Dataset(csv_file=validationcsv_file, img_dir = validation_img_dir, datatype = 'val', transform = transformation_valid)
         train_loader= DataLoader(train_dataset,batch_size=batchsize,shuffle = True,num_workers=0)
         val_loader=   DataLoader(validation_dataset,batch_size=batchsize,shuffle = True,num_workers=0)
-
-        criterion= nn.CrossEntropyLoss()
+        cweights = [1.02660468, 9.40661861, 1.00104606, 0.56843877, 0.84912748, 1.29337298, 0.82603942]
+        class_weights = torch.FloatTensor(cweights).cuda()
+        criterion= nn.CrossEntropyLoss(weight=class_weights)
         optimizer= optim.SGD(net.parameters(),lr= lr, weight_decay=0.001)
         scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[81,121, 161,181, 241, 281], gamma=0.5)
         Train(epochs, train_loader, val_loader, criterion, optimizer, scheduler, device)
